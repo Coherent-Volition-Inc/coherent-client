@@ -1,17 +1,23 @@
 import json
 import urllib.parse
 from datetime import datetime
+from os import environ as ENV
 from pathlib import Path
 
 import jwt
 import requests
+from dotenv import load_dotenv
+
+AUTH_API = ENV.get("AUTH_API")
+
+load_dotenv()
 
 
 class CoherentAPI:
-    def __init__(self):
+    def __init__(self, jwt=None, refresh_token=None):
         """Initialize the CoherentAPI client."""
-        self.jwt = None
-        self.refresh_token = None
+        self.jwt = jwt
+        self.refresh_token = refresh_token
         self.config_dir = Path.home() / ".coherent"
 
         # Ensure the config directory exists
@@ -33,7 +39,7 @@ class CoherentAPI:
             dict: The authentication response with JWT and refresh token
         """
         response = requests.post(
-            "https://auth.inaimathi.com/api/password/authenticate",
+            f"{AUTH_API.rstrip('/')}/api/password/authenticate",
             json={"password": password, "username": username},
         ).json()
 
@@ -85,7 +91,7 @@ class CoherentAPI:
             Exception: If authentication is required but no JWT is stored
         """
         # Construct the full URL
-        full_url = f"{url}/{path}"
+        full_url = f"{url.rstrip('/')}/{path.lstrip('/')}"
 
         # Set up headers
         headers = {}
@@ -158,7 +164,7 @@ class CoherentAPI:
             raise Exception("No refresh token available. Please re-authenticate.")
 
         response = requests.post(
-            "https://auth.inaimathi.com/api/token",
+            f"{AUTH_API}/api/token",
             json={"refresh_token": self.refresh_token},
         )
 

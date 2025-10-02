@@ -8,9 +8,9 @@ import jwt
 import requests
 from dotenv import load_dotenv
 
-AUTH_API = ENV.get("AUTH_API")
-
 load_dotenv()
+
+AUTH_SERVER = ENV.get("AUTH_SERVER", "https://auth.inaimathi.com")
 
 
 class CoherentAPI:
@@ -39,7 +39,7 @@ class CoherentAPI:
             dict: The authentication response with JWT and refresh token
         """
         response = requests.post(
-            f"{AUTH_API.rstrip('/')}/api/password/authenticate",
+            f"{AUTH_SERVER.rstrip('/')}/api/password/authenticate",
             json={"password": password, "username": username},
         ).json()
 
@@ -164,7 +164,7 @@ class CoherentAPI:
             raise Exception("No refresh token available. Please re-authenticate.")
 
         response = requests.post(
-            f"{AUTH_API}/api/token",
+            f"{AUTH_SERVER}/api/token",
             json={"refresh_token": self.refresh_token},
         )
 

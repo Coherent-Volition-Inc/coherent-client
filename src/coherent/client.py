@@ -1,6 +1,6 @@
 import json
 import urllib.parse
-from datetime import datetime
+from datetime import datetime, timezone
 from os import environ as ENV
 from pathlib import Path
 
@@ -23,8 +23,8 @@ class CoherentAPI:
         # Ensure the config directory exists
         self.config_dir.mkdir(exist_ok=True)
 
-        # Try to load existing tokens if available
-        self._load_tokens()
+        if jwt is None:
+            self._load_tokens()
 
     def auth(self, username, password):
         """
@@ -109,14 +109,11 @@ class CoherentAPI:
                 decoded = jwt.decode(self.jwt, options={"verify_signature": False})
                 exp_timestamp = decoded.get("exp")
 
-                if (
-                    exp_timestamp
-                    and datetime.fromtimestamp(exp_timestamp) <= datetime.now()
-                ):
-                    # Token is expired, refresh it
+                if exp_timestamp and datetime.fromtimestamp(
+                    exp_timestamp, tz=timezone.utc
+                ) <= datetime.now(timezone.utc):
                     self._refresh_token()
             except:
-                # If there's any issue decoding the token, try to refresh it
                 self._refresh_token()
 
             # Add the Authorization header

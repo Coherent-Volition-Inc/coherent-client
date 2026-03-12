@@ -16,7 +16,7 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
-dependencies = ["requests", "pyjwt[crypto]", "python-dotenv"]
+dependencies = ["httpx", "pyjwt[crypto]", "python-dotenv"]
 
 [project.urls]
 Homepage = "https://github.com/Coherent-Volition-Inc/coherent-client"

@@ -1,3 +1,5 @@
 httpx
 pyjwt[crypto]
 python-dotenv
+trivialai
+pillow>=12.2.0
